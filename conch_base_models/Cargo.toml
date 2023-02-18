@@ -1,0 +1,16 @@
+[package]
+name = "conch_base_models"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "conch_base_models"
+
+[dependencies]
+lazy_static = "1"
+regex = "1"
+strum = { version = "0", features = ["derive"] }
+strum_macros = { version = "0" }
+thiserror = { version = "1" }

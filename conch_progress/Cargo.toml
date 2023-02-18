@@ -1,0 +1,12 @@
+[package]
+name = "conch_progress"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "conch_progress"
+
+[dependencies]
+conch_base_models = { path = "../conch_base_models" }

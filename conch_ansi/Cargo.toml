@@ -1,0 +1,18 @@
+[package]
+name = "conch_ansi"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+name = "conch_ansi"
+
+[dependencies]
+conch_base_models = { path = "../conch_base_models" }
+conch_macros = { path = "../conch_macros" }
+lazy_static = "1"
+regex = "1"
+enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }
+strum = { version = "0", features = ["derive"] }
+strum_macros = { version = "0" }
