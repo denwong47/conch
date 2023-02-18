@@ -1,3 +1,5 @@
+//! Constants for all base models.
+
 use regex::Regex;
 
 use lazy_static::lazy_static;
@@ -10,8 +12,13 @@ pub const DEFAULT_SEPARATOR: char = ';';
 const BASE_CODE_PATTERN: &str = r#"\x1b\[(?P<codes>(?:\-?\d+[;:])*\-?\d+)(?P<end_char>[A-Za-z])"#;
 
 lazy_static! {
+    /// [`regex::Regex`] pattern for an escape code anywhere within a given text.
     pub static ref ESCAPE_CODE_PATTERN: Regex = Regex::new(BASE_CODE_PATTERN).unwrap();
+
+    /// [`regex::Regex`] pattern for an escape code leading a given text.
     pub static ref ESCAPE_CODE_START_PATTERN: Regex =
         Regex::new((String::from(r"^") + BASE_CODE_PATTERN).as_str()).unwrap();
+
+    /// [`regex::Regex`] pattern for any valid separators - namely `:` and `;`.
     pub static ref SEP_PATTERN: Regex = Regex::new(r"[:;]").unwrap();
 }

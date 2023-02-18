@@ -109,6 +109,10 @@ pub struct ANSIEscapeCode {
     pub end_char: char,
 
     /// Original `String` that generated this instance.
+    ///
+    /// This field is for the sole purpose of allowing `len()` to work. Instead of
+    /// measuring the length of the rebuilt string, this field records the original
+    /// [`String`] from [`TryFrom<&str>`], so this value will always be accurate.
     pub source_str: Option<String>,
 }
 #[allow(dead_code)]
@@ -241,7 +245,12 @@ impl<'t> TryFrom<Captures<'t>> for ANSIEscapeCode {
             _ => (None, Some(codes)),
         };
 
-        Ok(Self::new(code, modifiers, end_char).add_source(captures.get(0).unwrap().as_str()))
+        Ok(Self::new(code, modifiers, end_char).add_source(
+            captures
+                .get(0)
+                .unwrap() // `.get(0)` must be `Some()`
+                .as_str(),
+        ))
     }
 }
 impl fmt::Display for ANSIEscapeCode {
