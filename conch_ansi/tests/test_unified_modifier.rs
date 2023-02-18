@@ -84,7 +84,7 @@ mod test_add {
                     let mut result = $base;
                     $(result = result + $modifier;)+
 
-                    println!("  > Testing + for {}: {:?}", stringify!($name), result.wraps("Hello, World!"));
+                    println!("  > Testing + for {}: {}", stringify!($name), result.wraps("Hello, World!"));
                     assert_eq!(result, Modifier::Combo($expected));
                 }
 

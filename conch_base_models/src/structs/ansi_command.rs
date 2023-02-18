@@ -2,25 +2,11 @@
 ///
 use std::fmt;
 
-use lazy_static::lazy_static;
-
-use regex::{Captures, Regex};
+use regex::Captures;
 
 pub use crate::{IntoANSIEscapeCode, ModifierError};
 
-/// Default `sep` to use for [`ANSIEscapeCode`].
-pub const DEFAULT_SEPARATOR: char = ';';
-
-// In principle, there is one code that we won't match here, which is `\x1b[H`.
-// However this "origin position" code can be easily expressed as `\x1b[0;0H`.
-const BASE_CODE_PATTERN: &str = r#"\x1b\[(?P<codes>(?:\-?\d+[;:])*\-?\d+)(?P<end_char>[A-Za-z])"#;
-
-lazy_static! {
-    pub static ref ESCAPE_CODE_PATTERN: Regex = Regex::new(BASE_CODE_PATTERN).unwrap();
-    pub static ref ESCAPE_CODE_START_PATTERN: Regex =
-        Regex::new((String::from(r"^") + BASE_CODE_PATTERN).as_str()).unwrap();
-    pub static ref SEP_PATTERN: Regex = Regex::new(r"[:;]").unwrap();
-}
+pub use super::{DEFAULT_SEPARATOR, ESCAPE_CODE_PATTERN, ESCAPE_CODE_START_PATTERN, SEP_PATTERN};
 
 /// A basic dataclass of a deconstructed `\x1b[00;00;..m` structure.
 ///
@@ -118,6 +104,9 @@ pub struct ANSIEscapeCode {
     ///
     /// Mandatory - without this `char`, the pattern cannot be terminated.
     pub end_char: char,
+
+    /// Original `String` that generated this instance.
+    pub source_str: Option<String>,
 }
 #[allow(dead_code)]
 impl ANSIEscapeCode {
@@ -128,7 +117,14 @@ impl ANSIEscapeCode {
             modifiers: modifiers.unwrap_or(Vec::new()),
             sep: DEFAULT_SEPARATOR,
             end_char,
+            source_str: None,
         };
+    }
+
+    /// Chained method to add a soruce to this instance.
+    pub fn add_source(mut self, text: &str) -> Self {
+        self.source_str = Some(text.to_string());
+        self
     }
 
     /// Replace the seperator in this instance.
@@ -145,6 +141,14 @@ impl ANSIEscapeCode {
                 text.to_string(),
                 String::from("Unmatchable pattern."),
             ))
+    }
+
+    /// Return the `len` of the stringified version of itself.
+    pub fn len(&self) -> usize {
+        match &self.source_str {
+            Some(s) => s.len(),
+            None => self.to_string().len(),
+        }
     }
 }
 impl TryFrom<&str> for ANSIEscapeCode {
@@ -227,7 +231,7 @@ impl<'t> TryFrom<Captures<'t>> for ANSIEscapeCode {
             _ => (None, Some(codes)),
         };
 
-        Ok(Self::new(code, modifiers, end_char))
+        Ok(Self::new(code, modifiers, end_char).add_source(captures.get(0).unwrap().as_str()))
     }
 }
 impl fmt::Display for ANSIEscapeCode {
