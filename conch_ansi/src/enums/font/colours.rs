@@ -15,7 +15,7 @@ macro_rules! color_builder {
         $reset_idx:literal
     ) => {
         /// An Enum for ANSI 256-colour codes.
-        #[derive(Debug, EnumIter, EnumIndex, PartialEq)]
+        #[derive(Clone, Debug, EnumIter, EnumIndex, PartialEq)]
         #[index_type(OptionU8)]
         pub enum $enum_name {
             #[index(Some(0))]

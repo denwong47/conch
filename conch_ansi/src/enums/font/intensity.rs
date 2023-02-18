@@ -7,7 +7,7 @@ use conch_base_models::{ANSIEscapeCode, IntoANSIEscapeCode, ModifierError, Reset
 use conch_macros::ansi_enum_builder as builder;
 
 /// Intensity modifier
-#[derive(Debug, EnumIter, EnumIndex, PartialEq)]
+#[derive(Clone, Debug, EnumIter, EnumIndex, PartialEq)]
 #[index_type(u16)]
 pub enum Intensity {
     #[index(22)]
