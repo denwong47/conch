@@ -28,6 +28,7 @@ pub use super::{DEFAULT_SEPARATOR, ESCAPE_CODE_PATTERN, ESCAPE_CODE_START_PATTER
 ///         modifiers: Vec::new(),
 ///         sep: DEFAULT_SEPARATOR,
 ///         end_char: 'm',
+///         source_str: None, // This is not used in comparison
 ///     }
 /// );
 ///
@@ -39,6 +40,7 @@ pub use super::{DEFAULT_SEPARATOR, ESCAPE_CODE_PATTERN, ESCAPE_CODE_START_PATTER
 ///         modifiers: vec![20,8],
 ///         sep: DEFAULT_SEPARATOR,
 ///         end_char: 'H',
+///         source_str: None, // This is not used in comparison
 ///     }
 /// );
 ///
@@ -50,6 +52,7 @@ pub use super::{DEFAULT_SEPARATOR, ESCAPE_CODE_PATTERN, ESCAPE_CODE_START_PATTER
 ///         modifiers: vec![5,255],
 ///         sep: DEFAULT_SEPARATOR,
 ///         end_char: 'm',
+///         source_str: None, // This is not used in comparison
 ///     }
 /// );
 ///
@@ -71,7 +74,7 @@ pub use super::{DEFAULT_SEPARATOR, ESCAPE_CODE_PATTERN, ESCAPE_CODE_START_PATTER
 ///     parsed.is_err(),
 /// );
 /// ```
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct ANSIEscapeCode {
     /// Command Code.
     ///
@@ -149,6 +152,13 @@ impl ANSIEscapeCode {
             Some(s) => s.len(),
             None => self.to_string().len(),
         }
+    }
+}
+impl PartialEq for ANSIEscapeCode {
+    fn eq(&self, other: &Self) -> bool {
+        self.code == other.code
+            && self.modifiers == other.modifiers
+            && self.end_char == other.end_char
     }
 }
 impl TryFrom<&str> for ANSIEscapeCode {
