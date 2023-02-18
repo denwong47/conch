@@ -1,6 +1,5 @@
-//! Test base modifier enums.
-//!
-//! This does not include tests for `unified::Modifier`.
+//! Test [`Modifier`].
+
 use conch_ansi::*;
 use conch_base_models::*;
 
