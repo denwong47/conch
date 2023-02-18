@@ -84,7 +84,7 @@ mod test_add {
                     let mut result = $base;
                     $(result = result + $modifier;)+
 
-                    println!("Testing {}: {}", stringify!($i), result.wraps("Hello, World!"));
+                    println!("  > Testing + for {}: {:?}", stringify!($name), result.wraps("Hello, World!"));
                     assert_eq!(result, Modifier::Combo($expected));
                 }
 
@@ -93,7 +93,7 @@ mod test_add {
                     let mut result = $base;
                     $(result += $modifier;)+
 
-                    println!("Testing {}: {}", stringify!($i), result.wraps("Hello, World!"));
+                    println!("  > Testing += for {}: {}", stringify!($name), result.wraps("Hello, World!"));
                     assert_eq!(result, Modifier::Combo($expected));
                 }
             }
@@ -130,13 +130,13 @@ mod test_add {
         colour_background_colour,
         (
             Modifier::Colour(Colour::BrightYellow),
-            Modifier::Background(Background::BrightRed),
-            Modifier::Colour(Colour::BrightGreen)
+            Modifier::Colour(Colour::BrightGreen),
+            Modifier::Background(Background::BrightRed)
         ),
         vec![
             Modifier::Colour(Colour::BrightYellow),
-            Modifier::Background(Background::BrightRed),
-            Modifier::Colour(Colour::BrightGreen)
+            Modifier::Colour(Colour::BrightGreen),
+            Modifier::Background(Background::BrightRed)
         ]
     );
 }

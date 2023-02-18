@@ -245,7 +245,9 @@ impl fmt::Display for ANSIEscapeCode {
             code.iter()
                 .chain(self.modifiers.iter())
                 .fold(String::new(), |mut lhs, rhs| {
-                    lhs.push(self.sep);
+                    if lhs.len() > 0 {
+                        lhs.push(self.sep)
+                    };
                     lhs.push_str(&rhs.to_string());
                     lhs
                 });
