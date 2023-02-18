@@ -1,3 +1,5 @@
+/// An internal helper macro that builds all the auto implementations for enum classes
+/// in `conch_ansi`.
 #[macro_export]
 macro_rules! ansi_enum_builder {
     ($enum_name:ident) => {
