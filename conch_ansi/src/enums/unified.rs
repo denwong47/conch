@@ -9,6 +9,78 @@ use crate::{Background, Colour, Intensity};
 use conch_base_models::{ANSIEscapeCode, HasLength, ModifierError, Resetter, StringWrapper};
 
 /// Unified [`Modifier`] enum type.
+///
+/// For each of the enum types of [`Background`], [`Colour`] and [`Intensity`], this
+/// enum has a corresponding variant, bringing them under the same struct. Each of
+/// these variant takes a single-element tuple value of the corresponding enum type.
+///
+/// Most important methods are implemented and passed through to the underlying
+/// enum variant, such as [`Self::wraps()`] and [`Self::len()`], so in most cases they
+/// can be used interchangably in syntax terms:
+///
+/// ```rust
+/// use conch::*;
+///
+/// assert_eq!(
+///     Modifier::Colour(Colour::BrightRed).wraps("Hello, World!"),
+///     Colour::BrightRed.wraps("Hello, World!"),
+/// );
+///
+/// assert_eq!(
+///     Modifier::Intensity(Intensity::Bold).wraps("Hello, World!"),
+///     Intensity::Bold.wraps("Hello, World!"),
+/// );
+/// ```
+///
+/// To make instantiation easier, [`Modifier`] also allows convenient methods to
+/// get a certain variant by [`str`]:
+///
+/// ```rust
+/// use conch::*;
+///
+/// assert_eq!(
+///     Modifier::colour("BrightRed"),
+///     Some(Modifier::Colour(Colour::BrightRed))
+/// );
+///
+/// assert_eq!(
+///     Modifier::intensity("Bold"),
+///     Some(Modifier::Intensity(Intensity::Bold))
+/// )
+/// ```
+///
+/// [`Modifier`] also has the special variant of [`Modifier::Combo`], allowing multiple
+/// [`Modifier`] to be applied in sequence when [wrapping].
+///
+/// [`Modifier::Combo`] can be built from using `+` and `+=` operators:
+///
+/// [wrapping]: Modifier::wraps()
+///
+/// ```rust
+/// use conch::*;
+///
+/// assert_eq!(
+///     Modifier::colour("BrightRed").unwrap() + Modifier::intensity("Bold").unwrap(),
+///     Modifier::Combo(
+///         vec![
+///             Modifier::Colour(Colour::BrightRed),
+///             Modifier::Intensity(Intensity::Bold),
+///         ]
+///     )
+/// )
+/// ```
+///
+/// [`Modifier`] can also be used for [`std::fmt::Display`] directly:
+///
+/// ```rust
+/// use conch::*;
+///
+/// assert_eq!(
+///     (Modifier::colour("BrightRed").unwrap() + Modifier::intensity("Bold").unwrap())
+///     .wraps("Hello, world!"),
+///     "\u{1b}[38;5;9m\u{1b}[1mHello, world!\u{1b}[22m\u{1b}[39m"
+/// )
+/// ```
 #[allow(dead_code)]
 #[derive(Clone, Debug, PartialEq)]
 pub enum Modifier {
@@ -51,7 +123,7 @@ impl HasLength for Modifier {
                 match self {
                     $(Self::$variant(modifier) => modifier.len(),)+
                     Self::Combo(modifiers) => {
-                        // For `Combo`, sequentially format all the modifiers.
+                        // For [`Modifier::Combo`], sequentially format all the modifiers.
                         modifiers
                         .iter()
                         .fold(
@@ -71,7 +143,7 @@ impl HasLength for Modifier {
 
 /// Allow all Modifiers to have a resetter.
 /// For all single types, just return its own resetter.
-/// For `Combo`, returns another `Combo` with the resetters in reversed order.
+/// For [`Modifier::Combo`], returns another [`Modifier::Combo`] with the resetters in reversed order.
 impl Resetter for Modifier {
     fn resetter(&self, input: Option<&str>) -> Self {
         macro_rules! expand_variants {
@@ -79,7 +151,7 @@ impl Resetter for Modifier {
                 match self {
                     $(Self::$variant(modifier) => Self::$variant(modifier.resetter(input)),)+
                     Self::Combo(modifiers) => {
-                        // For `Combo`, sequentially format all the modifiers.
+                        // For [`Modifier::Combo`], sequentially format all the modifiers.
                         Self::Combo(
                             modifiers
                             .iter()
@@ -145,7 +217,7 @@ impl fmt::Display for Modifier {
                 match self {
                     $(Self::$variant(modifier) => modifier.fmt(f),)+
                     Self::Combo(modifiers) => {
-                        // For `Combo`, sequentially format all the modifiers.
+                        // For [`Modifier::Combo`], sequentially format all the modifiers.
                         Result::from_iter(
                             modifiers.iter().map(
                                 | modifier | modifier.fmt(f)

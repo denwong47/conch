@@ -16,3 +16,6 @@ regex = "1"
 enum_index = { git = "https://github.com/denwong47/enum_index", branch = "development" }
 strum = { version = "0", features = ["derive"] }
 strum_macros = { version = "0" }
+
+[dev-dependencies]
+conch = { path = "../" }
