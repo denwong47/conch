@@ -6,7 +6,7 @@ use std::ops::Range;
 use regex::{Match, Matches};
 
 use crate::Modifier;
-use conch_base_models::{ANSIEscapeCode, ESCAPE_CODE_PATTERN};
+use conch_base_models::{ANSIEscapeCode, HasLength, ESCAPE_CODE_PATTERN};
 
 pub struct ModifiersInText<'r, 't>(Matches<'r, 't>);
 impl<'r, 't> ModifiersInText<'r, 't> {

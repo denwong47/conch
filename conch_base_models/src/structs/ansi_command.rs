@@ -4,7 +4,7 @@ use std::fmt;
 
 use regex::Captures;
 
-pub use crate::{IntoANSIEscapeCode, ModifierError};
+pub use crate::{HasLength, IntoANSIEscapeCode, ModifierError};
 
 pub use super::{DEFAULT_SEPARATOR, ESCAPE_CODE_PATTERN, ESCAPE_CODE_START_PATTERN, SEP_PATTERN};
 
@@ -149,9 +149,10 @@ impl ANSIEscapeCode {
                 String::from("Unmatchable pattern."),
             ))
     }
-
+}
+impl HasLength for ANSIEscapeCode {
     /// Return the `len` of the stringified version of itself.
-    pub fn len(&self) -> usize {
+    fn len(&self) -> usize {
         match &self.source_str {
             Some(s) => s.len(),
             None => self.to_string().len(),

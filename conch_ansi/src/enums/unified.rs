@@ -4,8 +4,9 @@
 use std::{fmt, ops};
 
 use crate::{Background, Colour, Intensity};
-use conch_base_models::{ANSIEscapeCode, ModifierError, Resetter, StringWrapper};
+use conch_base_models::{ANSIEscapeCode, HasLength, ModifierError, Resetter, StringWrapper};
 
+/// Unified [`Modifier`] enum type.
 #[allow(dead_code)]
 #[derive(Clone, Debug, PartialEq)]
 pub enum Modifier {
@@ -16,10 +17,28 @@ pub enum Modifier {
     Combo(Vec<Self>),
 }
 
-impl Modifier {
-    /// Return the string length of this [`Modifier`], without resetting.
-    pub fn len(&self) -> usize {
-        self.to_string().len()
+impl HasLength for Modifier {
+    fn len(&self) -> usize {
+        macro_rules! expand_variants {
+            ($($variant:ident),+) => {
+                match self {
+                    $(Self::$variant(modifier) => modifier.len(),)+
+                    Self::Combo(modifiers) => {
+                        // For `Combo`, sequentially format all the modifiers.
+                        modifiers
+                        .iter()
+                        .fold(
+                            0,
+                            | lhs, modifier | {
+                                lhs + modifier.len()
+                            }
+                        )
+                    },
+                }
+            };
+        }
+
+        expand_variants!(Intensity, Colour, Background)
     }
 }
 
