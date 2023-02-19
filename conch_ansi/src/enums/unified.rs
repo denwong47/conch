@@ -7,13 +7,20 @@ use crate::{Background, Colour, Intensity};
 use conch_base_models::{ANSIEscapeCode, ModifierError, Resetter, StringWrapper};
 
 #[allow(dead_code)]
-#[derive(Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Modifier {
     Intensity(Intensity),
     Colour(Colour),
     Background(Background),
 
     Combo(Vec<Self>),
+}
+
+impl Modifier {
+    /// Return the string length of this [`Modifier`], without resetting.
+    pub fn len(&self) -> usize {
+        self.to_string().len()
+    }
 }
 
 /// Allow all Modifiers to have a resetter.
@@ -47,7 +54,7 @@ impl Resetter for Modifier {
     }
 }
 
-/// Allow two `Modifier` to be added together; so that when wrapping, the modifiers
+/// Allow two [`Modifier`] to be added together; so that when wrapping, the modifiers
 /// will be applied in reversed sequence.
 impl ops::Add for Modifier {
     type Output = Self;
@@ -66,6 +73,21 @@ impl ops::Add for Modifier {
         lhs_mods.append(&mut rhs_mods);
 
         Self::Combo(lhs_mods)
+    }
+}
+
+/// Allow a mutable [`Modifier`] to add another [`Modifier`] to itself.
+impl ops::AddAssign for Modifier {
+    fn add_assign(&mut self, other: Self) {
+        if let Self::Combo(_) = self {
+        } else {
+            *self = Self::Combo(vec![self.clone()]);
+        };
+
+        match self {
+            Self::Combo(mods) => mods.push(other),
+            _ => unreachable!("`self` should always be `Self::Combo`."),
+        }
     }
 }
 
