@@ -5,7 +5,8 @@ use std::ops::Range;
 
 use regex::{Match, Matches};
 
-use super::{ANSIEscapeCode, ESCAPE_CODE_PATTERN};
+use crate::Modifier;
+use conch_base_models::{ANSIEscapeCode, ESCAPE_CODE_PATTERN};
 
 pub struct ModifiersInText<'r, 't>(Matches<'r, 't>);
 impl<'r, 't> ModifiersInText<'r, 't> {
@@ -18,7 +19,7 @@ impl<'r, 't> ModifiersInText<'r, 't> {
     }
 }
 impl<'r, 't> Iterator for ModifiersInText<'r, 't> {
-    type Item = ANSIEscapeCode;
+    type Item = Modifier;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -26,7 +27,9 @@ impl<'r, 't> Iterator for ModifiersInText<'r, 't> {
                 let result = ANSIEscapeCode::try_from(text);
 
                 if let Ok(ansi) = result {
-                    return Some(ansi);
+                    if let Ok(modifier) = Modifier::try_from(ansi) {
+                        return Some(modifier);
+                    }
                 }
                 // If its not valid, continue searching.
             } else {
@@ -36,12 +39,16 @@ impl<'r, 't> Iterator for ModifiersInText<'r, 't> {
     }
 }
 
+/// Trait for [`str`] and [`String`] to iterate its modifiers.
+///
+/// `len` is just wrapper around its respective `len` functions, to provide a guarantee
+/// that anything that `impl FindModifiers` will have a `len` function.
 pub trait FindModifiers {
-    fn iter_modifier_strs(&self) -> ModifiersInText;
+    fn iter_modifiers(&self) -> ModifiersInText;
     fn len(&self) -> usize;
 }
 impl FindModifiers for &str {
-    fn iter_modifier_strs(&self) -> ModifiersInText {
+    fn iter_modifiers(&self) -> ModifiersInText {
         ModifiersInText::new(self)
     }
 
@@ -50,12 +57,12 @@ impl FindModifiers for &str {
     }
 }
 impl FindModifiers for String {
-    fn iter_modifier_strs(&self) -> ModifiersInText {
+    fn iter_modifiers(&self) -> ModifiersInText {
         ModifiersInText::new(&self)
     }
 
     fn len(&self) -> usize {
-        return self.len();
+        return String::len(self);
     }
 }
 
@@ -68,7 +75,7 @@ where
 {
     fn len_without_modifiers(&self) -> usize {
         let modifier_count = {
-            self.iter_modifier_strs()
+            self.iter_modifiers()
                 .fold(0_usize, |count, matched| count + matched.len())
         };
 
@@ -87,7 +94,7 @@ impl<'t> RangeWithoutModifiers<'t> {
             text,
             modifier_ranges: {
                 let mut v = vec![];
-                let mut iter = text.iter_modifier_strs();
+                let mut iter = text.iter_modifiers();
 
                 loop {
                     match iter.next_match() {

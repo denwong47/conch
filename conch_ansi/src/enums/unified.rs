@@ -16,6 +16,13 @@ pub enum Modifier {
     Combo(Vec<Self>),
 }
 
+impl Modifier {
+    /// Return the string length of this [`Modifier`], without resetting.
+    pub fn len(&self) -> usize {
+        self.to_string().len()
+    }
+}
+
 /// Allow all Modifiers to have a resetter.
 /// For all single types, just return its own resetter.
 /// For `Combo`, returns another `Combo` with the resetters in reversed order.
