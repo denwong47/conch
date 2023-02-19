@@ -3,6 +3,53 @@
 use conch_ansi::*;
 use conch_base_models::*;
 
+mod test_from_name {
+    use super::*;
+
+    macro_rules! test_factory {
+        (
+            $name:ident,
+            $method:ident,
+            $text:literal,
+            $expected:expr
+        ) => {
+            #[test]
+            fn $name() {
+                let result: Option<Modifier> = Modifier::$method($text);
+
+                assert_eq!(result, $expected)
+            }
+        };
+    }
+
+    test_factory!(
+        simple_colour,
+        colour,
+        "Black",
+        Some(Modifier::Colour(Colour::Black))
+    );
+
+    test_factory!(
+        simple_background,
+        background,
+        "BrightBlue",
+        Some(Modifier::Background(Background::BrightBlue))
+    );
+
+    test_factory!(
+        simple_intensity,
+        intensity,
+        "Bold",
+        Some(Modifier::Intensity(Intensity::Bold))
+    );
+
+    test_factory!(non_existent_colour, colour, "BadChoice", None);
+
+    test_factory!(non_existent_background, background, "BadChoice", None);
+
+    test_factory!(non_existent_intensity, intensity, "BadChoice", None);
+}
+
 mod test_parsing {
     use super::*;
 

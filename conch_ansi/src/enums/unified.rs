@@ -3,6 +3,8 @@
 
 use std::{fmt, ops};
 
+use enum_index::VariantByName;
+
 use crate::{Background, Colour, Intensity};
 use conch_base_models::{ANSIEscapeCode, HasLength, ModifierError, Resetter, StringWrapper};
 
@@ -17,7 +19,32 @@ pub enum Modifier {
     Combo(Vec<Self>),
 }
 
+macro_rules! expand_variants {
+    ($(($variant:ident, $base_enum:ident, $method:ident)),+$(,)?) => {
+        impl Modifier {
+            $(
+                #[allow(dead_code)]
+                pub fn $method(name: &str) -> Option<Self> {
+                    $base_enum::by_name(name)
+                    .map(
+                        | modifier | {
+                            Self::$variant(modifier)
+                        }
+                    )
+                }
+            )*
+        }
+    };
+}
+
+expand_variants!(
+    (Intensity, Intensity, intensity),
+    (Colour, Colour, colour),
+    (Background, Background, background),
+);
+
 impl HasLength for Modifier {
+    /// String Length of the [`Modifier`] upon conversion.
     fn len(&self) -> usize {
         macro_rules! expand_variants {
             ($($variant:ident),+) => {
