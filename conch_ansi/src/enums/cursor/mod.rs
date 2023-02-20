@@ -4,6 +4,7 @@ use strum_macros::EnumIter;
 use conch_base_models::{ANSIEscapeCode, IntoANSIEscapeCode, ModifierError, Resetter};
 use conch_macros::ansi_enum_builder as builder;
 
+/// Move the position of the current cursor in the terminal.
 #[allow(dead_code)]
 #[derive(Clone, Debug, EnumIter)]
 pub enum MoveCursor {
