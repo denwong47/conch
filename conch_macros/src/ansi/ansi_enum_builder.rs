@@ -23,13 +23,6 @@ macro_rules! ansi_enum_builder {
             }
         }
 
-        impl Resetter for $enum_name {
-            #[allow(unused_variables)]
-            fn resetter(&self, input: Option<&str>) -> Self {
-                Self::default()
-            }
-        }
-
         impl<'a> TryFrom<ANSIEscapeCode> for $enum_name {
             type Error = ModifierError;
 

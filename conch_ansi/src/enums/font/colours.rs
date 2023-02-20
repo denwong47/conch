@@ -843,6 +843,16 @@ macro_rules! color_builder {
             }
         }
 
+        /// Attempt to reset any settings to before this modifier was applied.
+        ///
+        /// The resultant modifier can set any colours applied to the terminal default.
+        impl Resetter for $enum_name {
+            #[allow(unused_variables)]
+            fn resetter(&self, input: Option<&str>) -> Self {
+                Self::default()
+            }
+        }
+
         impl TryFrom<&ANSIEscapeCode> for $enum_name {
             type Error = ModifierError;
 
