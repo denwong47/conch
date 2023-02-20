@@ -4,7 +4,7 @@
 use conch_ansi::*;
 use conch_base_models::*;
 
-mod test_try_from_captures {
+mod test_try_from {
     use super::*;
 
     macro_rules! test_factory {
@@ -39,7 +39,7 @@ mod test_try_from_captures {
         Ok::<_, ModifierError>(Colour::R3G0B1)
     );
     test_factory!(
-        simple_apply,
+        simple_reset,
         "\x1b[39m",
         Ok::<_, ModifierError>(Colour::Reset)
     );
