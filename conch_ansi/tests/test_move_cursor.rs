@@ -192,4 +192,29 @@ mod test_partial_eq {
     );
 }
 
-mod test_resetter {}
+mod test_resetter {
+    use super::*;
+
+    macro_rules! test_factory {
+        (
+            $name:ident,
+            $apply:expr,
+            $reset:expr
+        ) => {
+            #[test]
+            fn $name() {
+                assert_eq!($apply.resetter(Some("Hello, World!")), $reset)
+            }
+        };
+    }
+
+    test_factory!(simple_up, MoveCursor::Up(5), MoveCursor::Down(5));
+
+    test_factory!(simple_down, MoveCursor::Down(5), MoveCursor::Up(5));
+
+    // test_factory!(
+    //     simple_right,
+    //     MoveCursor::Right(5),
+    //     MoveCursor::Left(5+13)
+    // );
+}
