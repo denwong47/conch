@@ -95,6 +95,9 @@ macro_rules! expand_variants {
     ($(($variant:ident, $base_enum:ident, $method:ident)),+$(,)?) => {
         impl Modifier {
             $(
+                #[doc = "Implement a convenient static method to get a [`"]
+                #[doc = stringify!($base_enum)]
+                #[doc = "`] by name."]
                 #[allow(dead_code)]
                 pub fn $method(name: &str) -> Option<Self> {
                     $base_enum::by_name(name)

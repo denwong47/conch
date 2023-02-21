@@ -46,33 +46,18 @@ impl PartialEq for MoveCursor {
 
 impl IntoANSIEscapeCode for MoveCursor {
     fn into_ansi_escape_code(&self) -> ANSIEscapeCode {
-        macro_rules! expand_variants {
-            (
-                $(
-                    ($variant:pat,
-                    $modifiers:expr,
-                    $end_char:literal
-                    $(,)?)
-                ),+
-            ) => {
-                match self {
-                    $($variant => ANSIEscapeCode::new(
-                        None,
-                        $modifiers,
-                        $end_char,
-                    ),)*
-                }
-            };
+        match self {
+            Self::Up(n) if *n < 0 => ANSIEscapeCode::new(None, Some(vec![n.abs()]), 'B'),
+            Self::Up(n) => ANSIEscapeCode::new(None, Some(vec![*n]), 'A'),
+            Self::Down(n) if *n < 0 => ANSIEscapeCode::new(None, Some(vec![n.abs()]), 'A'),
+            Self::Down(n) => ANSIEscapeCode::new(None, Some(vec![*n]), 'B'),
+            Self::Right(n) if *n < 0 => ANSIEscapeCode::new(None, Some(vec![n.abs()]), 'D'),
+            Self::Right(n) => ANSIEscapeCode::new(None, Some(vec![*n]), 'C'),
+            Self::Left(n) if *n < 0 => ANSIEscapeCode::new(None, Some(vec![n.abs()]), 'C'),
+            Self::Left(n) => ANSIEscapeCode::new(None, Some(vec![*n]), 'D'),
+            Self::Origin => ANSIEscapeCode::new(None, Some(vec![0, 0]), 'H'),
+            Self::Absolute(x, y) => ANSIEscapeCode::new(None, Some(vec![*y, *x]), 'H'),
         }
-
-        expand_variants!(
-            (Self::Up(n), Some(vec![*n]), 'A'),
-            (Self::Down(n), Some(vec![*n]), 'B'),
-            (Self::Right(n), Some(vec![*n]), 'C'),
-            (Self::Left(n), Some(vec![*n]), 'D'),
-            (Self::Origin, Some(vec![0, 0]), 'H'),
-            (Self::Absolute(x, y), Some(vec![*y, *x]), 'H')
-        )
     }
 }
 
@@ -95,8 +80,8 @@ impl Resetter for MoveCursor {
         match self {
             Self::Up(n) => Self::Down(*n), // TODO Take in account \n counts?
             Self::Down(n) => Self::Up(*n), // TODO Take in account \n counts?
-            Self::Right(n) => todo!(),
-            Self::Left(n) => todo!(),
+            Self::Right(n) => Self::Left(n + input.map(|s| s.len()).unwrap_or(0) as i32),
+            Self::Left(n) => Self::Right(n - input.map(|s| s.len()).unwrap_or(0) as i32),
             Self::Origin => Self::Origin,
             Self::Absolute(x, y) => self.clone(),
         }

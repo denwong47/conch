@@ -218,3 +218,46 @@ mod test_resetter {
     //     MoveCursor::Left(5+13)
     // );
 }
+
+mod manual_tests {
+    use super::*;
+
+    // For manual testing. Run using `cargo test -- --ignored --nocapture
+    #[test]
+    #[ignore]
+    fn run() {
+        // print 20 dots
+        print!(
+            "{}",
+            (0..20)
+                .into_iter()
+                .fold(String::new(), |lhs, num| lhs + ".")
+        );
+        print!(
+            "{}",
+            (0..20)
+                .into_iter()
+                .fold(String::new(), |lhs, num| lhs + ":")
+        );
+        print!(
+            "{}",
+            (0..20)
+                .into_iter()
+                .fold(String::new(), |lhs, num| lhs + ".")
+        );
+        print!(
+            "{}",
+            (0..20)
+                .into_iter()
+                .fold(String::new(), |lhs, num| lhs + ":")
+        );
+        println!();
+
+        println!(
+            "Original{}{}{}Right",
+            MoveCursor::Right(12).wraps("Shifted16"),
+            MoveCursor::Right(32).wraps("Shifted36"),
+            MoveCursor::Left(4).wraps("LongWord"),
+        );
+    }
+}
