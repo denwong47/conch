@@ -1,6 +1,7 @@
 use std::fmt;
 use strum_macros::EnumIter;
 
+use crate::traits::*;
 use conch_base_models::{ANSIEscapeCode, IntoANSIEscapeCode, ModifierError, Resetter};
 use conch_macros::ansi_enum_builder as builder;
 
@@ -45,6 +46,23 @@ impl PartialEq for MoveCursor {
 }
 
 impl IntoANSIEscapeCode for MoveCursor {
+    /// Convert any [`MoveCursor`] into a [`ANSIEscapeCode`].
+    ///
+    /// This also converts negative values to the opposite modifier:
+    ///
+    /// ```rust
+    /// use conch_ansi::MoveCursor;
+    /// use conch_base_models::ANSIEscapeCode;
+    ///
+    /// assert_eq!(
+    ///     ANSIEscapeCode::from(&MoveCursor::Right(-1)),
+    ///     ANSIEscapeCode::new(
+    ///         None,
+    ///         Some(vec![1]),
+    ///         'D', // Left
+    ///     )
+    /// )
+    /// ```
     fn into_ansi_escape_code(&self) -> ANSIEscapeCode {
         match self {
             Self::Up(n) if *n < 0 => ANSIEscapeCode::new(None, Some(vec![n.abs()]), 'B'),
@@ -55,7 +73,7 @@ impl IntoANSIEscapeCode for MoveCursor {
             Self::Right(n) => ANSIEscapeCode::new(None, Some(vec![*n]), 'C'),
             Self::Left(n) if *n < 0 => ANSIEscapeCode::new(None, Some(vec![n.abs()]), 'C'),
             Self::Left(n) => ANSIEscapeCode::new(None, Some(vec![*n]), 'D'),
-            Self::Origin => ANSIEscapeCode::new(None, Some(vec![0, 0]), 'H'),
+            Self::Origin => ANSIEscapeCode::new(None, None, 'H'),
             Self::Absolute(x, y) => ANSIEscapeCode::new(None, Some(vec![*y, *x]), 'H'),
         }
     }
@@ -80,8 +98,12 @@ impl Resetter for MoveCursor {
         match self {
             Self::Up(n) => Self::Down(*n), // TODO Take in account \n counts?
             Self::Down(n) => Self::Up(*n), // TODO Take in account \n counts?
-            Self::Right(n) => Self::Left(n + input.map(|s| s.len()).unwrap_or(0) as i32),
-            Self::Left(n) => Self::Right(n - input.map(|s| s.len()).unwrap_or(0) as i32),
+            Self::Right(n) => {
+                Self::Left(n + input.map(|s| s.len_without_modifiers()).unwrap_or(0) as i32)
+            }
+            Self::Left(n) => {
+                Self::Right(n - input.map(|s| s.len_without_modifiers()).unwrap_or(0) as i32)
+            }
             Self::Origin => Self::Origin,
             Self::Absolute(x, y) => self.clone(),
         }

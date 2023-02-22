@@ -229,35 +229,31 @@ mod manual_tests {
         // print 20 dots
         print!(
             "{}",
-            (0..20)
-                .into_iter()
-                .fold(String::new(), |lhs, num| lhs + ".")
+            (0..20).into_iter().fold(String::new(), |lhs, _| lhs + ".")
         );
         print!(
             "{}",
-            (0..20)
-                .into_iter()
-                .fold(String::new(), |lhs, num| lhs + ":")
+            (0..20).into_iter().fold(String::new(), |lhs, _| lhs + ":")
         );
         print!(
             "{}",
-            (0..20)
-                .into_iter()
-                .fold(String::new(), |lhs, num| lhs + ".")
+            (0..20).into_iter().fold(String::new(), |lhs, _| lhs + ".")
         );
         print!(
             "{}",
-            (0..20)
-                .into_iter()
-                .fold(String::new(), |lhs, num| lhs + ":")
+            (0..20).into_iter().fold(String::new(), |lhs, _| lhs + ":")
         );
         println!();
 
         println!(
             "Original{}{}{}Right",
             MoveCursor::Right(12).wraps("Shifted16"),
-            MoveCursor::Right(32).wraps("Shifted36"),
-            MoveCursor::Left(4).wraps("LongWord"),
+            MoveCursor::Right(32).wraps(
+                &Modifier::background("BrightRed")
+                    .unwrap()
+                    .wraps("Shifted36")
+            ),
+            MoveCursor::Left(6).wraps(&Modifier::colour("BrightRed").unwrap().wraps("LongWord")),
         );
     }
 }
