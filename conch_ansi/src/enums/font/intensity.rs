@@ -25,6 +25,16 @@ impl default::Default for Intensity {
     }
 }
 
+impl Resetter for Intensity {
+    /// Attempt to reset any settings to before this modifier was applied.
+    ///
+    /// The resultant modifier can set intensity back to normal for all subsequent text.
+    #[allow(unused_variables)]
+    fn resetter(&self, input: Option<&str>) -> Self {
+        Self::default()
+    }
+}
+
 impl IntoANSIEscapeCode for Intensity {
     fn into_ansi_escape_code(&self) -> ANSIEscapeCode {
         ANSIEscapeCode::new(Some(self.index()), None, 'm')

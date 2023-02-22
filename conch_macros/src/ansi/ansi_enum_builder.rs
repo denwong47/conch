@@ -4,6 +4,7 @@
 macro_rules! ansi_enum_builder {
     ($enum_name:ident) => {
         use conch_base_models::*;
+
         impl fmt::Display for $enum_name {
             /// Transform the object into ANSIEscapeCode, then use that to generate
             /// a String.
@@ -16,10 +17,9 @@ macro_rules! ansi_enum_builder {
             }
         }
 
-        impl Resetter for $enum_name {
-            #[allow(unused_variables)]
-            fn resetter(&self, input: Option<&str>) -> Self {
-                Self::default()
+        impl HasLength for $enum_name {
+            fn len(&self) -> usize {
+                self.to_string().len()
             }
         }
 
