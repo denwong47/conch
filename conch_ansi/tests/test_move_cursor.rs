@@ -247,13 +247,9 @@ mod manual_tests {
 
         println!(
             "Original{}{}{}Right",
-            MoveCursor::Right(12).wraps("Shifted16"),
-            MoveCursor::Right(32).wraps(
-                &Modifier::background("BrightRed")
-                    .unwrap()
-                    .wraps("Shifted36")
-            ),
-            MoveCursor::Left(6).wraps(&Modifier::colour("BrightRed").unwrap().wraps("LongWord")),
+            Modifier::right(12).wraps("Shifted16"),
+            (Modifier::right(32) + Modifier::background("BrightRed").unwrap()).wraps("Shifted36"),
+            (Modifier::left(6) + Modifier::colour("BrightRed").unwrap()).wraps("LongWord"),
         );
     }
 }

@@ -5,7 +5,7 @@ use std::{fmt, ops};
 
 use enum_index::VariantByName;
 
-use crate::{Background, Colour, Intensity};
+use crate::{Background, Colour, Intensity, MoveCursor};
 use conch_base_models::{ANSIEscapeCode, HasLength, ModifierError, Resetter, StringWrapper};
 
 /// Unified [`Modifier`] enum type.
@@ -87,6 +87,7 @@ pub enum Modifier {
     Intensity(Intensity),
     Colour(Colour),
     Background(Background),
+    MoveCursor(MoveCursor),
 
     Combo(Vec<Self>),
 }
@@ -108,6 +109,29 @@ macro_rules! expand_variants {
                     )
                 }
             )*
+
+            pub fn up(amount: i32) -> Self {
+                Self::MoveCursor(MoveCursor::Up(amount))
+            }
+            pub fn down(amount: i32) -> Self {
+                Self::MoveCursor(MoveCursor::Down(amount))
+            }
+            pub fn right(amount: i32) -> Self {
+                Self::MoveCursor(MoveCursor::Right(amount))
+            }
+            pub fn left(amount: i32) -> Self {
+                Self::MoveCursor(MoveCursor::Left(amount))
+            }
+            pub fn origin() -> Self {
+                Self::MoveCursor(MoveCursor::Origin)
+            }
+            pub fn absolute(x: i32, y: i32) -> Self {
+                Self::MoveCursor(MoveCursor::Absolute(x, y))
+            }
+            pub fn relative(x: i32, y: i32) -> Self {
+                Self::MoveCursor(MoveCursor::Right(x))
+                + Self::MoveCursor(MoveCursor::Down(y))
+            }
         }
     };
 }
@@ -140,7 +164,7 @@ impl HasLength for Modifier {
             };
         }
 
-        expand_variants!(Intensity, Colour, Background)
+        expand_variants!(Intensity, Colour, Background, MoveCursor)
     }
 }
 
@@ -171,7 +195,7 @@ impl Resetter for Modifier {
             };
         }
 
-        expand_variants!(Intensity, Colour, Background)
+        expand_variants!(Intensity, Colour, Background, MoveCursor)
     }
 }
 
@@ -231,7 +255,7 @@ impl fmt::Display for Modifier {
             };
         }
 
-        expand_variants!(Intensity, Colour, Background)
+        expand_variants!(Intensity, Colour, Background, MoveCursor)
     }
 }
 
@@ -247,6 +271,7 @@ impl StringWrapper for Modifier {
             Self::Intensity(modifier) => modifier.wraps(text),
             Self::Colour(modifier) => modifier.wraps(text),
             Self::Background(modifier) => modifier.wraps(text),
+            Self::MoveCursor(modifier) => modifier.wraps(text),
         }
     }
 }
@@ -282,7 +307,12 @@ impl TryFrom<&ANSIEscapeCode> for Modifier {
             (Colour, Colour, Some(38), 'm'),
             (Colour, Colour, Some(39), 'm'),
             (Background, Background, Some(48), 'm'),
-            (Background, Background, Some(49), 'm')
+            (Background, Background, Some(49), 'm'),
+            (MoveCursor, MoveCursor, None, 'A'),
+            (MoveCursor, MoveCursor, None, 'B'),
+            (MoveCursor, MoveCursor, None, 'C'),
+            (MoveCursor, MoveCursor, None, 'D'),
+            (MoveCursor, MoveCursor, None, 'H')
         )
     }
 }
