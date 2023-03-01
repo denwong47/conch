@@ -4,6 +4,7 @@ use conch_ansi::Modifier;
 use conch_base_models::StringWrapper;
 
 /// A wrapper around [`Vec<String>`] to provide more control over display.
+#[derive(Clone, Debug)]
 pub struct Lines {
     pub title: Option<String>,
     pub lines: Vec<String>,
