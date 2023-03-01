@@ -64,8 +64,7 @@ mod test_s_macro {
             "World".to_owned()
             "!"
         ),
-        "Hello,
-    World!"
+        "Hello,\nWorld!"
     );
 
     test_factory!(single_uint, (12345_u32), "12345");

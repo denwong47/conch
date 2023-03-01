@@ -41,19 +41,21 @@ impl Lines {
     }
 
     /// Extend the lines in an instance of [`Lines`].
-    pub fn extend<S>(&mut self, lines: Vec<S>)
+    pub fn extend<S>(mut self, lines: Vec<S>) -> Self
     where
         S: ToString,
     {
         self.lines.extend(lines.iter().map(|s| s.to_string()));
+        self
     }
 
     /// Append a line to an instance of [`Lines`].
-    pub fn extend_one<S>(&mut self, line: S)
+    pub fn extend_one<S>(mut self, line: S) -> Self
     where
         S: ToString,
     {
         self.lines.append(&mut vec![line.to_string()]);
+        self
     }
 
     /// A chained function to set [`Lines::title`]
