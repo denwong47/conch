@@ -150,7 +150,13 @@ impl Display for Lines {
             .map(|title| {
                 write!(f, "{}", title).and_then(|res| {
                     if self.lines.len() > 0 {
-                        write!(f, "{}", &spacer)
+                        write!(
+                            f,
+                            "{}{}{}",
+                            &spacer,
+                            self.lines_modifier.wraps(&self.prefix),
+                            &spacer
+                        )
                     } else {
                         Ok(res)
                     }

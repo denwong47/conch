@@ -69,7 +69,7 @@ mod test_display {
         title,
         Lines::from(vec!["veni", "vidi", "vici",]).title("Julius Caesar"),
         s!(
-            "Julius Caesar\n"
+            "Julius Caesar\n\n"
             "veni\n"
             "vidi\n"
             "vici"
@@ -82,7 +82,7 @@ mod test_display {
             .title("Julius Caesar")
             .title_prefix("Quotes of "),
         s!(
-            "Quotes of Julius Caesar\n"
+            "Quotes of Julius Caesar\n\n"
             "veni\n"
             "vidi\n"
             "vici"
@@ -97,6 +97,7 @@ mod test_display {
             .modifier(Modifier::colour("Grayscale13").unwrap()),
         s!(
             "\u{1b}[38;5;245mQuotes of Julius Caesar\u{1b}[39m\n"
+            "\u{1b}[38;5;245m\u{1b}[39m\n"
             "\u{1b}[38;5;245mveni\u{1b}[39m\n"
             "\u{1b}[38;5;245mvidi\u{1b}[39m\n"
             "\u{1b}[38;5;245mvici\u{1b}[39m"
@@ -114,9 +115,29 @@ mod test_display {
             ),
         s!(
             "\u{1b}[38;5;9m\u{1b}[1mQuotes of Julius Caesar\u{1b}[22m\u{1b}[39m\n"
+            "\u{1b}[38;5;245m\u{1b}[39m\n"
             "\u{1b}[38;5;245mveni\u{1b}[39m\n"
             "\u{1b}[38;5;245mvidi\u{1b}[39m\n"
             "\u{1b}[38;5;245mvici\u{1b}[39m"
+        )
+    );
+
+    test_factory!(
+        lines_and_title_modifier_with_prefix,
+        Lines::from(vec!["veni", "vidi", "vici",])
+            .title("Julius Caesar")
+            .title_prefix("Quotes of ")
+            .modifier(Modifier::colour("Grayscale13").unwrap())
+            .title_modifier(
+                Modifier::colour("BrightRed").unwrap() + Modifier::intensity("Bold").unwrap()
+            )
+            .prefix("> "),
+        s!(
+            "\u{1b}[38;5;9m\u{1b}[1mQuotes of Julius Caesar\u{1b}[22m\u{1b}[39m\n"
+            "\u{1b}[38;5;245m> \u{1b}[39m\n"
+            "\u{1b}[38;5;245m> veni\u{1b}[39m\n"
+            "\u{1b}[38;5;245m> vidi\u{1b}[39m\n"
+            "\u{1b}[38;5;245m> vici\u{1b}[39m"
         )
     );
 }
