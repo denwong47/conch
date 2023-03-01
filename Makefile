@@ -25,5 +25,7 @@ test:
 	@cd conch_macros && cargo test
 	@cd conch_progress && cargo test
 	@cd conch_split && cargo test
+	@cd conch_calendar && cargo test
+	@cargo test --all-features
 
 setup: git_init precommit_init doc test git_init_commit

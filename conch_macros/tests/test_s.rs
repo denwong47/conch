@@ -65,16 +65,10 @@ mod test_s_macro {
             "!"
         ),
         "Hello,
-World!"
+    World!"
     );
 
-    test_factory! (
-        single_uint,
-        (
-            12345_u32
-        ),
-        "12345"
-    );
+    test_factory!(single_uint, (12345_u32), "12345");
 
     test_factory! (
         mix_uint_str,
