@@ -26,11 +26,102 @@ impl Lines {
             spacing: 1,
         }
     }
+
+    /// Create a new instance of [`Lines`] by splitting a block of text
+    /// into lines.
+    pub fn from_text<S>(text: S, max_len: u16) -> Self
+    where
+        S: ToString,
+    {
+        let _ = text.to_string();
+        drop(max_len);
+
+        todo!("Not implemented yet.")
+    }
+
+    /// Extend the lines in an instance of [`Lines`].
+    pub fn extend<S>(&mut self, lines: Vec<S>)
+    where
+        S: ToString,
+    {
+        self.lines.extend(lines.iter().map(|s| s.to_string()));
+    }
+
+    /// Append a line to an instance of [`Lines`].
+    pub fn extend_one<S>(&mut self, line: S)
+    where
+        S: ToString,
+    {
+        self.lines.append(&mut vec![line.to_string()]);
+    }
+
+    /// A chained function to set [`Lines::title`]
+    /// on an instance.
+    pub fn title<S>(mut self, value: S) -> Self
+    where
+        S: ToString,
+    {
+        self.title = Some(value.to_string());
+        self
+    }
+
+    /// A chained function to set [`Lines::title_prefix`]
+    /// on an instance.
+    pub fn title_prefix<S>(mut self, value: S) -> Self
+    where
+        S: ToString,
+    {
+        self.title_prefix = Some(value.to_string());
+        self
+    }
+
+    /// A chained function to set [`Lines::title_modifier`]
+    /// on an instance.
+    pub fn title_modifier(mut self, value: Modifier) -> Self {
+        self.title_modifier = Some(value);
+        self
+    }
+
+    /// A chained function to set [`Lines::prefix`]
+    /// on an instance.
+    pub fn prefix<S>(mut self, value: S) -> Self
+    where
+        S: ToString,
+    {
+        self.prefix = value.to_string();
+        self
+    }
+
+    /// A chained function to set [`Lines::prefix`]
+    /// on an instance.
+    pub fn modifier(mut self, value: Modifier) -> Self {
+        self.lines_modifier = value;
+        self
+    }
+
+    /// A chained function to set [`Lines::spacing`]
+    /// on an instance.
+    pub fn spacing(mut self, value: u8) -> Self {
+        self.spacing = value;
+        self
+    }
 }
 
 impl From<Lines> for Vec<String> {
     fn from(value: Lines) -> Self {
         value.lines
+    }
+}
+
+impl<S> From<Vec<S>> for Lines
+where
+    S: ToString,
+{
+    /// Convert a [`Vec<S>`] of any `Item` that `impl` [`ToString`] into [`Lines`].
+    /// Note that if you have a [`Vec<String>`], using [`Lines::new()`] will be more
+    /// performant.
+    fn from(value: Vec<S>) -> Self {
+        Lines::new(value.into_iter().map(|s| s.to_string()).collect())
     }
 }
 
@@ -66,12 +157,21 @@ impl Display for Lines {
             .unwrap_or(Ok(()))?;
 
         // TEXT BLOCK
-        Result::from_iter(self.lines.iter().map(|line| line.as_str()).map(|line| {
-            write!(
-                f,
-                "{}",
-                self.lines_modifier.wraps(&(self.prefix.to_string() + line))
-            )
-        }))
+        let text = self.lines.iter().fold(String::new(), |s, line| {
+            let sep = {
+                if s.len() > 0 {
+                    &spacer
+                } else {
+                    ""
+                }
+            };
+            s + sep
+                + self
+                    .lines_modifier
+                    .wraps(&(self.prefix.to_string() + line))
+                    .as_str()
+        });
+
+        write!(f, "{}", text)
     }
 }

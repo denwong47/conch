@@ -11,3 +11,4 @@ name = "conch_split"
 [dependencies]
 conch_base_models = { path = "../conch_base_models" }
 conch_ansi = { path = "../conch_ansi" }
+conch_macros = { path = "../conch_macros" }
