@@ -90,6 +90,8 @@ pub enum Modifier {
     MoveCursor(MoveCursor),
 
     Combo(Vec<Self>),
+
+    Nothing,
 }
 
 macro_rules! expand_variants {
@@ -142,6 +144,12 @@ expand_variants!(
     (Background, Background, background),
 );
 
+impl Default for Modifier {
+    fn default() -> Self {
+        Self::Nothing
+    }
+}
+
 impl HasLength for Modifier {
     /// String Length of the [`Modifier`] upon conversion.
     fn len(&self) -> usize {
@@ -160,6 +168,7 @@ impl HasLength for Modifier {
                             }
                         )
                     },
+                    Self::Nothing => 0,
                 }
             };
         }
@@ -191,6 +200,7 @@ impl Resetter for Modifier {
                             .collect()
                         )
                     },
+                    Self::Nothing => Self::Nothing,
                 }
             };
         }
@@ -205,6 +215,13 @@ impl ops::Add for Modifier {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
+        if self == Self::Nothing {
+            return rhs;
+        }
+        if rhs == Self::Nothing {
+            return self;
+        }
+
         let mut lhs_mods = match self {
             Self::Combo(mods) => mods,
             other => vec![other],
@@ -251,6 +268,7 @@ impl fmt::Display for Modifier {
                             )
                         )
                     },
+                    Self::Nothing => Ok(()),
                 }
             };
         }
@@ -272,6 +290,7 @@ impl StringWrapper for Modifier {
             Self::Colour(modifier) => modifier.wraps(text),
             Self::Background(modifier) => modifier.wraps(text),
             Self::MoveCursor(modifier) => modifier.wraps(text),
+            Self::Nothing => text.to_string(),
         }
     }
 }
