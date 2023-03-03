@@ -9,4 +9,7 @@ pub use conch_macros::*;
 pub use conch_progress::*;
 pub use conch_split::*;
 
+#[cfg(feature = "calendar")]
+pub use conch_calendar::*;
+
 pub mod prelude;

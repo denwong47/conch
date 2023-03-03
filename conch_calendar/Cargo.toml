@@ -1,14 +1,20 @@
 [package]
-name = "conch_split"
+name = "conch_calendar"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "conch_split"
+name = "conch_calendar"
 
 [dependencies]
-conch_base_models = { path = "../conch_base_models" }
+chrono = { version = "0" }
+lazy_static = { version = "1" }
 conch_ansi = { path = "../conch_ansi" }
+conch_base_models = { path = "../conch_base_models" }
 conch_macros = { path = "../conch_macros" }
+conch_split = { path = "../conch_split" }
+
+[dev-dependencies]
+conch = { path = "../" }

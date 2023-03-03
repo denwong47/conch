@@ -5,6 +5,11 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[features]
+
+default = ["calendar"]
+calendar = ["dep:conch_calendar"]
+
 [lib]
 name = "conch"
 
@@ -14,3 +19,5 @@ conch_ansi = { path = "./conch_ansi" }
 conch_macros = { path = "./conch_macros" }
 conch_progress = { path = "./conch_progress" }
 conch_split = { path = "./conch_split" }
+
+conch_calendar = { path = "./conch_calendar", optional = true }
