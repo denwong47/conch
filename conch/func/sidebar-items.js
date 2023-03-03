@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":[["get_easter_date","Calculate Easter Sunday date of a given year."]]};

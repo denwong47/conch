@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["England","State struct for marking regions."]]};
