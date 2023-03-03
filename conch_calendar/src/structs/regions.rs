@@ -76,7 +76,7 @@ impl England {
 
     fn get_spring_bank_holiday(year: i32) -> Option<NaiveDate> {
         match year {
-            // Moved due to Diamond Jubilee bank holiday
+            // Moved due to Golden Jubilee bank holiday
             2002 => NaiveDate::from_ymd_opt(2002, 6, 4),
 
             // Moved due to Diamond Jubilee bank holiday
