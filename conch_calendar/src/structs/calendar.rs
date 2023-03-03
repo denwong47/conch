@@ -160,7 +160,7 @@ where
     /// Defines whether to capitalize the title row, so that instead of
     /// `M  T  W  T  F  S  S`, `m  t  w  t  f  s  s` will be displayed.
     ///
-    /// Use [`Self::captialize_title()`] to change this.
+    /// Use [`Self::capitalize_title()`] to change this.
     pub capitalize_title: bool,
 
     // Modifiers

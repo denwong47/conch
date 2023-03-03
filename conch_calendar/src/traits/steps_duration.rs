@@ -55,8 +55,15 @@ where
     fn into_iter_by_duration(self, duration: Duration) -> StepsOverRange<Self>;
 }
 
-impl IterRangeByDuration for RangeInclusive<NaiveDate> {
-    fn into_iter_by_duration(self, duration: Duration) -> StepsOverRange<Self> {
-        StepsOverRange::new(self, duration)
-    }
+macro_rules! impl_factory {
+    ($type:ty) => {
+        impl IterRangeByDuration for $type {
+            fn into_iter_by_duration(self, duration: Duration) -> StepsOverRange<Self> {
+                StepsOverRange::new(self, duration)
+            }
+        }
+    };
 }
+
+impl_factory!(RangeInclusive<NaiveDate>);
+impl_factory!(Range<NaiveDate>);

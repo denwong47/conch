@@ -17,4 +17,4 @@ mod region;
 pub use region::*;
 
 mod steps_duration;
-pub(crate) use steps_duration::*;
+pub use steps_duration::*;
