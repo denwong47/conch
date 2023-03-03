@@ -126,4 +126,22 @@ mod test_to_vec_strings {
             "\u{1b}[38;5;9m\u{1b}[1m25\u{1b}[22m\u{1b}[39m \u{1b}[38;5;9m\u{1b}[1m26\u{1b}[22m\u{1b}[39m \u{1b}[38;5;4m27\u{1b}[39m \u{1b}[38;5;4m28\u{1b}[39m \u{1b}[38;5;4m29\u{1b}[39m \u{1b}[38;5;11m30\u{1b}[39m \u{1b}[38;5;9m\u{1b}[1m31\u{1b}[22m\u{1b}[39m"
         ]
     );
+
+    test_factory! (
+        show_other_months,
+        NaiveDate::from_ymd_opt(2023,11,1).unwrap(),
+        | calendar: CalendarMonth<regions::England> | -> CalendarMonth<regions::England> {
+            calendar
+            .modify_weekdays(Modifier::colour("Blue").unwrap())
+            .show_other_months(true)
+        },
+        vec![
+            "\u{1b}[1m M  T  W  T  F  S  S\u{1b}[22m",
+            "\u{1b}[38;5;245m30\u{1b}[39m \u{1b}[38;5;245m31\u{1b}[39m \u{1b}[38;5;4m 1\u{1b}[39m \u{1b}[38;5;4m 2\u{1b}[39m \u{1b}[38;5;4m 3\u{1b}[39m \u{1b}[38;5;4m 4\u{1b}[39m \u{1b}[38;5;9m\u{1b}[1m 5\u{1b}[22m\u{1b}[39m",
+            "\u{1b}[38;5;4m 6\u{1b}[39m \u{1b}[38;5;4m 7\u{1b}[39m \u{1b}[38;5;4m 8\u{1b}[39m \u{1b}[38;5;4m 9\u{1b}[39m \u{1b}[38;5;4m10\u{1b}[39m \u{1b}[38;5;4m11\u{1b}[39m \u{1b}[38;5;9m\u{1b}[1m12\u{1b}[22m\u{1b}[39m",
+            "\u{1b}[38;5;4m13\u{1b}[39m \u{1b}[38;5;4m14\u{1b}[39m \u{1b}[38;5;4m15\u{1b}[39m \u{1b}[38;5;4m16\u{1b}[39m \u{1b}[38;5;4m17\u{1b}[39m \u{1b}[38;5;4m18\u{1b}[39m \u{1b}[38;5;9m\u{1b}[1m19\u{1b}[22m\u{1b}[39m",
+            "\u{1b}[38;5;4m20\u{1b}[39m \u{1b}[38;5;4m21\u{1b}[39m \u{1b}[38;5;4m22\u{1b}[39m \u{1b}[38;5;4m23\u{1b}[39m \u{1b}[38;5;4m24\u{1b}[39m \u{1b}[38;5;4m25\u{1b}[39m \u{1b}[38;5;9m\u{1b}[1m26\u{1b}[22m\u{1b}[39m",
+            "\u{1b}[38;5;4m27\u{1b}[39m \u{1b}[38;5;4m28\u{1b}[39m \u{1b}[38;5;4m29\u{1b}[39m \u{1b}[38;5;4m30\u{1b}[39m \u{1b}[38;5;245m 1\u{1b}[39m \u{1b}[38;5;245m 2\u{1b}[39m \u{1b}[38;5;245m 3\u{1b}[39m"
+        ]
+    );
 }
