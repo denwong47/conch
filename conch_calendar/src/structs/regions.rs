@@ -1,13 +1,33 @@
 use crate::{config, func, LastWeekdayOfMonth, NextWeekdayFromDate, RegionMarker};
 use chrono::{Datelike, Duration, NaiveDate, Weekday};
 
-/// State struct for marking regions.
-pub struct England;
+/// State Struct representing he [Region] of England, part of the United Kingdom.
+///
+/// Due to devolved powers, England does not necessarily share its public holidays
+/// called Bank Holidays with Scotland, Wales and Northern Ireland. This struct is only
+/// usable for England.
+///
+/// Most Bank Holidays in England are calculated by first/last of a certain weekday
+/// in a given month, hence implementation of [`LastWeekdayOfMonth`] is required.
+///
+/// Whenever a Bank Holiday coincides with a Saturday or Sunday, a substitute Bank
+/// Holiday is issued on the following Monday. Such calculations are facilitated by
+/// the [`NextWeekdayFromDate`] trait.
+///
+/// [Region]: RegionMarker
+pub struct England {
+    _private: bool, // Prevent instantiation.
+}
 impl RegionMarker for England {
+    /// Defines that England starts a week on Monday.
     fn starts_week_with() -> Option<Weekday> {
         Some(Weekday::Mon)
     }
 
+    /// List all the Bank Holidays in England for a given year.
+    ///
+    /// Bank Holidays Act came into force in 1871; thus no years prior will return
+    /// any dates at all.
     fn list_holidays(year: i32) -> Vec<NaiveDate> {
         // Bank Holidays Act 1871
         if year >= 1871 {
