@@ -17,7 +17,7 @@ mod test_england {
             #[test]
             fn $name() {
                 assert_eq!(
-                    Holidays::<regions::England, $year>::list(),
+                    Holidays::<regions::England>::list($year),
                     vec![
                         $(NaiveDate::from_ymd_opt($year, $month, $day).unwrap(),)*
                     ]

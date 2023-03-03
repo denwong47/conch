@@ -12,3 +12,7 @@ name = "conch_calendar"
 chrono = { version = "0" }
 lazy_static = { version = "1" }
 conch_ansi = { path = "../conch_ansi" }
+conch_base_models = { path = "../conch_base_models" }
+
+[dev-dependencies]
+conch_split = { path = "../conch_split" }

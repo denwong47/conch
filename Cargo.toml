@@ -7,7 +7,7 @@ edition = "2021"
 
 [features]
 
-default = []
+default = ["calendar"]
 calendar = ["dep:conch_calendar"]
 
 [lib]
