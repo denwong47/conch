@@ -4,6 +4,10 @@ use chrono::{Duration, NaiveDate, Weekday};
 /// State struct for marking regions.
 pub struct England;
 impl RegionMarker for England {
+    fn starts_week_with() -> Option<Weekday> {
+        Some(Weekday::Mon)
+    }
+
     fn list_holidays(year: i32) -> Vec<chrono::NaiveDate> {
         let weekdays = Vec::from_iter(config::WEEKDAYS.into_iter());
 

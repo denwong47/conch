@@ -13,6 +13,8 @@ chrono = { version = "0" }
 lazy_static = { version = "1" }
 conch_ansi = { path = "../conch_ansi" }
 conch_base_models = { path = "../conch_base_models" }
+conch_macros = { path = "../conch_macros" }
+conch_split = { path = "../conch_split" }
 
 [dev-dependencies]
-conch_split = { path = "../conch_split" }
+conch = { path = "../" }

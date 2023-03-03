@@ -2,7 +2,7 @@ use chrono::NaiveDate;
 
 /// Calculate Easter Sunday date of a given year.
 ///
-/// Reference: https://stackoverflow.com/questions/2510383/how-can-i-calculate-what-date-good-friday-falls-on-given-a-year
+/// Reference: <https://stackoverflow.com/questions/2510383/how-can-i-calculate-what-date-good-friday-falls-on-given-a-year>
 pub fn get_easter_date(year: i32) -> NaiveDate {
     let g = year % 19;
     let c = year / 100;
