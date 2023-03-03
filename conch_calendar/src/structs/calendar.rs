@@ -134,6 +134,10 @@ where
     /// Cache the holidays relevant to us.
     pub(crate) holidays: Vec<NaiveDate>,
 
+    /// Cache the total number of weeks in this month.
+    /// This excludes the title.
+    pub(crate) weeks_count: usize,
+
     // Date related presentation settings
     /// The [`Weekday`] to starts each week with.
     /// Each region can set its own [default] which is used unless overridden
@@ -214,6 +218,7 @@ where
             region: PhantomData,
 
             holidays: vec![],
+            weeks_count: 0,
 
             week_starts_with: Region::starts_week_with()
                 .unwrap_or(DEFAULT_WEEK_STARTS_WITH.clone()),
@@ -231,9 +236,10 @@ where
             decorated_days: HashMap::new(),
         }
         .generate_relevant_holidays()
+        .generate_weeks_count()
     }
 
-    /// Chained method to populate holidays of this month.
+    /// Chained private method to populate holidays of this month.
     fn generate_relevant_holidays(mut self) -> Self {
         self.holidays = Holidays::<Region>::list(self.date.year())
             .into_iter()
@@ -243,20 +249,24 @@ where
         self
     }
 
-    /// Add a special [`Modifier`] to a single date.
-    pub fn decorate_day(mut self, date: NaiveDate, modifier: Modifier) -> Self {
-        // Ignore day if its outside of range
-        if self.contains(&date) {
-            // Swap with a placeholder value to avoid messing with hash table
-            let existing_modifier = self
-                .decorated_days
-                .insert(date, Modifier::Nothing)
-                .unwrap_or(Modifier::Nothing);
+    /// Chained private method to pre-calculate the calendar's number of weeks.
+    fn generate_weeks_count(mut self) -> Self {
+        self.weeks_count = (0..6)
+            .map(
+                // Get the weeks we need to print.
+                |week_no| {
+                    let week =
+                        (self.date + Duration::days(7 * week_no)).week(self.week_starts_with);
 
-            // Swap out the placeholder value
-            self.decorated_days
-                .insert(date, existing_modifier + modifier);
-        }
+                    if self.contains(&week.first_day()) || self.contains(&week.last_day()) {
+                        Some(week)
+                    } else {
+                        None
+                    }
+                },
+            )
+            .filter(|week| week.is_some())
+            .count();
 
         self
     }
@@ -280,6 +290,144 @@ where
                 .reduce(|lhs, rhs| lhs + " " + &rhs)
                 .unwrap(),
         )
+    }
+
+    /// Add a special [`Modifier`] to a single date.
+    pub fn decorate_day(mut self, date: NaiveDate, modifier: Modifier) -> Self {
+        // Ignore day if its outside of range
+        if self.contains(&date) {
+            // Swap with a placeholder value to avoid messing with hash table
+            let existing_modifier = self
+                .decorated_days
+                .insert(date, Modifier::Nothing)
+                .unwrap_or(Modifier::Nothing);
+
+            // Swap out the placeholder value
+            self.decorated_days
+                .insert(date, existing_modifier + modifier);
+        }
+
+        self
+    }
+
+    /// Use [`Self::week_starts_with`] to determine the number of days that had
+    /// passed since the local start of week in this calendar.
+    ///
+    /// Example
+    /// ```rust
+    /// use chrono::{NaiveDate, Weekday};
+    /// use conch::{CalendarMonth, regions};
+    ///
+    /// let today = NaiveDate::from_ymd_opt(2023, 3, 3).unwrap();
+    ///
+    /// // Lets start our week with Thursday just for fun.
+    /// let calendar: CalendarMonth<regions::England> =
+    ///     CalendarMonth::new(today)
+    ///     .starts_week_with(Weekday::Thu);
+    /// ;
+    ///
+    /// let my_friday = NaiveDate::from_isoywd_opt(2023, 1, Weekday::Fri).unwrap();
+    ///
+    /// assert_eq!(
+    ///     calendar.num_days_from_start_of_week(&my_friday),
+    ///     1, // Friday - Thursday = 1
+    /// )
+    /// ```
+    pub fn num_days_from_start_of_week(&self, date: &NaiveDate) -> u32 {
+        (7 + date.weekday().num_days_from_monday() - self.week_starts_with.num_days_from_monday())
+            % 7
+    }
+
+    /// Get the week number of a certain date.
+    ///
+    /// This number is 0-indexed; the first week is `0`.
+    ///
+    /// Example
+    /// ```rust
+    /// use chrono::{NaiveDate, Weekday};
+    /// use conch::{CalendarMonth, regions};
+    ///
+    /// let today = NaiveDate::from_ymd_opt(2023, 3, 3).unwrap();
+    ///
+    /// // Week starts with Monday.
+    /// let calendar: CalendarMonth<regions::England> =
+    ///     CalendarMonth::new(today)
+    /// ;
+    ///
+    /// assert_eq!(
+    ///     calendar.week_number_of(
+    ///         &NaiveDate::from_ymd_opt(2023, 3, 7).unwrap()
+    ///     ),
+    ///     Some(1), // Second Week
+    /// );
+    ///
+    /// // Week starts with Wednesday.
+    /// let calendar = calendar.starts_week_with(Weekday::Wed);
+    ///
+    /// assert_eq!(
+    ///     calendar.week_number_of(
+    ///         &NaiveDate::from_ymd_opt(2023, 3, 7).unwrap()
+    ///     ),
+    ///     Some(0), // First Week
+    /// );
+    ///
+    /// // Week starts with Thursday.
+    /// let calendar = calendar.starts_week_with(Weekday::Thu);
+    ///
+    /// assert_eq!(
+    ///     calendar.week_number_of(
+    ///         &NaiveDate::from_ymd_opt(2023, 3, 9).unwrap() // 9th this time
+    ///     ),
+    ///     Some(2), // Third Week
+    /// );
+    ///
+    /// // Date out of range.
+    ///
+    /// assert_eq!(
+    ///     calendar.week_number_of(
+    ///         &NaiveDate::from_ymd_opt(2023, 4, 1).unwrap() // 9th this time
+    ///     ),
+    ///     None,
+    /// );
+    /// ```
+    ///
+    /// For reference:
+    /// ```text
+    /// March 2023 Week
+    ///
+    ///  M  T  W  T  F  S  S
+    ///        1  2  3  4  5
+    ///  6  7  8  9 10 11 12
+    /// 13 14 15 16 17 18 19
+    /// 20 21 22 23 24 25 26
+    /// 27 28 29 30 31
+    /// ```
+    ///
+    pub fn week_number_of(&self, date: &NaiveDate) -> Option<u32> {
+        if self.contains(&date) {
+            // Assuming our week starts with Sunday, and we are searching for 10th.
+            //
+            //  S  M  T  W  T  F  S
+            // 26 27 28 29 30 31  1
+            //  2  3  4  5  6  7  8
+            //  9[10]11 12 13 14 15
+            // 16 17 18 19 20 21 22
+            // 23 24 25 26 27 28 29
+            // 30 31  1  2  3  4  5
+            //
+            // local_weekday_of_1st = 6
+            //
+            // result = (10+6-1) / 7 = 2
+            Some({
+                let local_weekday_of_1st = self.num_days_from_start_of_week(
+                    &NaiveDate::from_ymd_opt(self.date.year(), self.date.month(), 1).unwrap(),
+                );
+
+                (date.day() + local_weekday_of_1st - 1) / 7
+            })
+        } else {
+            None
+        }
     }
 }
 
