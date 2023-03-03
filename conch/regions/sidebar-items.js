@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":[["England","State struct for marking regions."]]};
+window.SIDEBAR_ITEMS = {"struct":[["England","State Struct representing he Region of England, part of the United Kingdom."]]};
