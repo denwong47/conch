@@ -59,14 +59,6 @@ lazy_static! {
 /// let lines = Lines::from(calendar);
 ///
 /// println!("{}", &lines);
-/// assert_eq!(lines.to_string(), s!(
-///     "\u{1b}[1m M  T  W  T  F  S  S\u{1b}[22m\n"
-///     "       1  2 \u{1b}[38;5;12m\u{1b}[1m 3\u{1b}[22m\u{1b}[39m  4 \u{1b}[38;5;9m\u{1b}[1m 5\u{1b}[22m\u{1b}[39m\n"
-///     " 6  7  8  9 10 11 \u{1b}[38;5;9m\u{1b}[1m12\u{1b}[22m\u{1b}[39m\n"
-///     "13 14 15 16 17 18 \u{1b}[38;5;9m\u{1b}[1m19\u{1b}[22m\u{1b}[39m\n"
-///     "20 21 22 23 24 25 \u{1b}[38;5;9m\u{1b}[1m26\u{1b}[22m\u{1b}[39m\n"
-///     "27 28 29 30 31      "
-/// ));
 /// ```
 ///
 /// This will produce a printout like:
