@@ -136,7 +136,7 @@ where
 
     /// Cache the total number of weeks in this month.
     /// This excludes the title.
-    pub(crate) weeks_count: usize,
+    pub(crate) weeks_count: u32,
 
     // Date related presentation settings
     /// The [`Weekday`] to starts each week with.
@@ -266,7 +266,7 @@ where
                 },
             )
             .filter(|week| week.is_some())
-            .count();
+            .count() as u32;
 
         self
     }
@@ -428,6 +428,11 @@ where
         } else {
             None
         }
+    }
+
+    /// Return the number of weeks in this month.
+    pub fn weeks_count(&self) -> u32 {
+        self.weeks_count
     }
 }
 
