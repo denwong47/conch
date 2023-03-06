@@ -6,6 +6,8 @@ use enum_index::*;
 use conch_base_models::{ANSIEscapeCode, IntoANSIEscapeCode, ModifierError, Resetter};
 use conch_macros::ansi_enum_builder as builder;
 
+use crate::Modifier;
+
 /// Intensity modifier
 #[derive(Clone, Debug, EnumIter, EnumIndex, PartialEq)]
 #[index_type(u16)]
@@ -75,4 +77,4 @@ impl TryFrom<&ANSIEscapeCode> for Intensity {
     }
 }
 
-builder!(Intensity);
+builder!(Intensity, Intensity);

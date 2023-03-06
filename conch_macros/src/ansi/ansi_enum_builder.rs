@@ -2,7 +2,11 @@
 /// in `conch_ansi`.
 #[macro_export]
 macro_rules! ansi_enum_builder {
-    ($enum_name:ident) => {
+    (
+        $enum_name:ident,
+        $modifier_variant:ident
+        $(,)?
+    ) => {
         use conch_base_models::*;
 
         impl fmt::Display for $enum_name {
@@ -39,6 +43,12 @@ macro_rules! ansi_enum_builder {
             /// Use ANSIEscapeCode to parse the str first, then select variant of itself if successful.
             fn try_from(value: &str) -> Result<Self, Self::Error> {
                 ANSIEscapeCode::try_from(value).and_then(|ansi| $enum_name::try_from(&ansi))
+            }
+        }
+
+        impl From<$enum_name> for Modifier {
+            fn from(value: $enum_name) -> Modifier {
+                Modifier::$modifier_variant(value)
             }
         }
     };

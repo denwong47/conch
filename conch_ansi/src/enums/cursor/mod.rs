@@ -1,9 +1,11 @@
 use std::fmt;
 use strum_macros::EnumIter;
 
-use crate::traits::*;
 use conch_base_models::{ANSIEscapeCode, IntoANSIEscapeCode, ModifierError, Resetter};
 use conch_macros::ansi_enum_builder as builder;
+
+use crate::traits::*;
+use crate::Modifier;
 
 /// Move the position of the current cursor in the terminal.
 #[allow(dead_code)]
@@ -180,4 +182,4 @@ impl TryFrom<&ANSIEscapeCode> for MoveCursor {
     }
 }
 
-builder!(MoveCursor);
+builder!(MoveCursor, MoveCursor);

@@ -5,7 +5,7 @@ use std::{fmt, ops};
 
 use enum_index::VariantByName;
 
-use crate::{Background, Colour, Intensity, MoveCursor};
+use crate::{Background, Clear, Colour, Intensity, MoveCursor};
 use conch_base_models::{ANSIEscapeCode, HasLength, ModifierError, Resetter, StringWrapper};
 
 /// Unified [`Modifier`] enum type.
@@ -88,6 +88,7 @@ pub enum Modifier {
     Colour(Colour),
     Background(Background),
     MoveCursor(MoveCursor),
+    Clear(Clear),
 
     Combo(Vec<Self>),
 
@@ -173,7 +174,7 @@ impl HasLength for Modifier {
             };
         }
 
-        expand_variants!(Intensity, Colour, Background, MoveCursor)
+        expand_variants!(Intensity, Colour, Background, MoveCursor, Clear)
     }
 }
 
@@ -200,6 +201,7 @@ impl Resetter for Modifier {
                             .collect()
                         )
                     },
+                    Self::Clear(_) => Self::Nothing, // Clear has nothing to reset. It does not even impl Resetter.
                     Self::Nothing => Self::Nothing,
                 }
             };
@@ -273,7 +275,7 @@ impl fmt::Display for Modifier {
             };
         }
 
-        expand_variants!(Intensity, Colour, Background, MoveCursor)
+        expand_variants!(Intensity, Colour, Background, MoveCursor, Clear)
     }
 }
 
@@ -290,6 +292,7 @@ impl StringWrapper for Modifier {
             Self::Colour(modifier) => modifier.wraps(text),
             Self::Background(modifier) => modifier.wraps(text),
             Self::MoveCursor(modifier) => modifier.wraps(text),
+            Self::Clear(modifier) => modifier.to_string() + text, // Clear does not implement StringWrapper.
             Self::Nothing => text.to_string(),
         }
     }
@@ -331,7 +334,9 @@ impl TryFrom<&ANSIEscapeCode> for Modifier {
             (MoveCursor, MoveCursor, None, 'B'),
             (MoveCursor, MoveCursor, None, 'C'),
             (MoveCursor, MoveCursor, None, 'D'),
-            (MoveCursor, MoveCursor, None, 'H')
+            (MoveCursor, MoveCursor, None, 'H'),
+            (Clear, Clear, None, 'J'),
+            (Clear, Clear, None, 'K')
         )
     }
 }

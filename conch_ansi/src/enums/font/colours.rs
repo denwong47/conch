@@ -6,6 +6,8 @@ use enum_index::*;
 use conch_base_models::{ANSIEscapeCode, IntoANSIEscapeCode, ModifierError};
 use conch_macros::ansi_enum_builder as builder;
 
+use crate::Modifier;
+
 type OptionU8 = Option<u8>;
 
 macro_rules! color_builder {
@@ -910,7 +912,7 @@ macro_rules! color_builder {
             }
         }
 
-        builder!($enum_name);
+        builder!($enum_name, $enum_name);
     };
 }
 
