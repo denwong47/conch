@@ -6,7 +6,7 @@ pub trait ContainsDate {
     fn contains(&self, date: &NaiveDate) -> bool;
 }
 
-impl<'a, T> ContainsDate for &'a [T]
+impl<'a, T> ContainsDate for Vec<T>
 where
     T: ContainsDate,
 {
