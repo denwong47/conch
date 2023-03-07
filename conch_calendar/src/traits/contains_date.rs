@@ -5,3 +5,12 @@ use chrono::NaiveDate;
 pub trait ContainsDate {
     fn contains(&self, date: &NaiveDate) -> bool;
 }
+
+impl<'a, T> ContainsDate for &'a [T]
+where
+    T: ContainsDate,
+{
+    fn contains(&self, date: &NaiveDate) -> bool {
+        self.iter().any(|item| item.contains(date))
+    }
+}
