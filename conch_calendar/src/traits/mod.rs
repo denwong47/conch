@@ -1,5 +1,5 @@
 mod calendar_day;
-pub(crate) use calendar_day::*;
+pub use calendar_day::*;
 
 mod contains_date;
 pub use contains_date::*;
